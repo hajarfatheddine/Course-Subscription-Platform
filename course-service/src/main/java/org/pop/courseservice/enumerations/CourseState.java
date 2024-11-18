@@ -7,5 +7,5 @@ public enum CourseState {
     PUBLISHED,
     ARCHIVED,
     UPDATED,
-    ON_HOLD;
+    ON_HOLD
 }
