@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.micrometer.common.util.StringUtils.isEmpty;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -45,28 +46,41 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseDto> getAllCourses() {
+    public List<CourseDto> getAllCourses() throws BusinessException {
         List<Course> courseList = coursesRepository.findAll();
+        if(isEmpty(courseList)){
+            throw businessExceptionFactory.get(MessageCode.NO_COURSES_AVAILABLE);
+        }
         return courseList.stream()
                 .map(this::mapToCourseDto)
                 .toList();
     }
 
     @Override
-    public CourseDto getCourseById(Long oid) {
-        return mapToCourseDto(coursesRepository.findCoursesByOid(oid));
+    public CourseDto getCourseById(Long oid) throws BusinessException {
+        Course course = coursesRepository.findCoursesByOid(oid);
+        if (course == null){
+            throw businessExceptionFactory.get(MessageCode.COURSE_DOES_NOT_EXIST);
+        }
+        return mapToCourseDto(course);
     }
 
     @Override
-    public CourseDto updateCourseStatus(Long oid, CourseDto requestDto) {
+    public CourseDto updateCourseStatus(Long oid, CourseDto requestDto) throws BusinessException {
         Course course = coursesRepository.findCoursesByOid(oid);
+        if (course == null){
+            throw businessExceptionFactory.get(MessageCode.COURSE_DOES_NOT_EXIST);
+        }
         course.setCourseStatus(requestDto.getCourseStatus());
         return mapToCourseDto(coursesRepository.save(course));
     }
 
     @Override
-    public void deleteCourse(Long oid) {
+    public void deleteCourse(Long oid) throws BusinessException {
         Course course = coursesRepository.findCoursesByOid(oid);
+        if (course == null){
+            throw businessExceptionFactory.get(MessageCode.COURSE_DOES_NOT_EXIST);
+        }
         coursesRepository.delete(course);
     }
 

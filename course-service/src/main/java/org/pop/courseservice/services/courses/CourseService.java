@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface CourseService {
     CourseDto addCourse(CourseDto courseDto) throws BusinessException;
-    List<CourseDto> getAllCourses();
-    CourseDto getCourseById(Long oid);
-    CourseDto updateCourseStatus(Long oid, CourseDto requestDto);
-    void deleteCourse(Long oid);
+    List<CourseDto> getAllCourses() throws BusinessException;
+    CourseDto getCourseById(Long oid) throws BusinessException;
+    CourseDto updateCourseStatus(Long oid, CourseDto requestDto) throws BusinessException;
+    void deleteCourse(Long oid) throws BusinessException;
 }
