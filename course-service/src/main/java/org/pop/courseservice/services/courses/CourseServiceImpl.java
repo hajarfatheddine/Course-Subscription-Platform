@@ -7,6 +7,9 @@ import org.pop.courseservice.dtos.CourseDto;
 import org.pop.courseservice.entities.Assignment;
 import org.pop.courseservice.entities.Course;
 import org.pop.courseservice.entities.Module;
+import org.pop.courseservice.enumerations.MessageCode;
+import org.pop.courseservice.exceptions.BusinessException;
+import org.pop.courseservice.exceptions.BusinessExceptionFactory;
 import org.pop.courseservice.repositories.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +17,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static io.micrometer.common.util.StringUtils.isEmpty;
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 @Service
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository coursesRepository;
+    private final BusinessExceptionFactory businessExceptionFactory;
 
     @Override
-    public CourseDto addCourse(CourseDto courseDto) {
+    public CourseDto addCourse(CourseDto courseDto) throws BusinessException{
+        if (isEmpty(courseDto.getTitle())){
+            throw businessExceptionFactory.get(MessageCode.COURSE_TITLE_MANDATORY);
+        }
         Course newCourse = Course.builder()
                 .title(courseDto.getTitle())
                 .description(courseDto.getDescription())
@@ -36,23 +46,42 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseDto> getAllCourses() {
+    public List<CourseDto> getAllCourses() throws BusinessException {
         List<Course> courseList = coursesRepository.findAll();
+        if(isEmpty(courseList)){
+            throw businessExceptionFactory.get(MessageCode.NO_COURSES_AVAILABLE);
+        }
         return courseList.stream()
                 .map(this::mapToCourseDto)
                 .toList();
     }
 
     @Override
-    public CourseDto getCourseById(Long oid) {
-        return mapToCourseDto(coursesRepository.findCoursesByOid(oid));
+    public CourseDto getCourseById(Long oid) throws BusinessException {
+        Course course = coursesRepository.findCoursesByOid(oid);
+        if (course == null){
+            throw businessExceptionFactory.get(MessageCode.COURSE_DOES_NOT_EXIST);
+        }
+        return mapToCourseDto(course);
     }
 
     @Override
-    public CourseDto updateCourseStatus(Long oid, CourseDto requestDto) {
+    public CourseDto updateCourseStatus(Long oid, CourseDto requestDto) throws BusinessException {
         Course course = coursesRepository.findCoursesByOid(oid);
+        if (course == null){
+            throw businessExceptionFactory.get(MessageCode.COURSE_DOES_NOT_EXIST);
+        }
         course.setCourseStatus(requestDto.getCourseStatus());
         return mapToCourseDto(coursesRepository.save(course));
+    }
+
+    @Override
+    public void deleteCourse(Long oid) throws BusinessException {
+        Course course = coursesRepository.findCoursesByOid(oid);
+        if (course == null){
+            throw businessExceptionFactory.get(MessageCode.COURSE_DOES_NOT_EXIST);
+        }
+        coursesRepository.delete(course);
     }
 
     private CourseDto mapToCourseDto(Course newCourse) {
