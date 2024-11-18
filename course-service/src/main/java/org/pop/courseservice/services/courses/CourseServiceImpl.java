@@ -7,6 +7,9 @@ import org.pop.courseservice.dtos.CourseDto;
 import org.pop.courseservice.entities.Assignment;
 import org.pop.courseservice.entities.Course;
 import org.pop.courseservice.entities.Module;
+import org.pop.courseservice.enumerations.MessageCode;
+import org.pop.courseservice.exceptions.BusinessException;
+import org.pop.courseservice.exceptions.BusinessExceptionFactory;
 import org.pop.courseservice.repositories.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +17,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static io.micrometer.common.util.StringUtils.isEmpty;
+
 @Service
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository coursesRepository;
+    private final BusinessExceptionFactory businessExceptionFactory;
 
     @Override
-    public CourseDto addCourse(CourseDto courseDto) {
+    public CourseDto addCourse(CourseDto courseDto) throws BusinessException{
+        if (isEmpty(courseDto.getTitle())){
+            throw businessExceptionFactory.get(MessageCode.COURSE_TITLE_MANDATORY);
+        }
         Course newCourse = Course.builder()
                 .title(courseDto.getTitle())
                 .description(courseDto.getDescription())

@@ -3,6 +3,7 @@ package org.pop.courseservice.controllers;
 import lombok.RequiredArgsConstructor;
 import org.pop.courseservice.dtos.CourseDto;
 import org.pop.courseservice.enumerations.MessageCode;
+import org.pop.courseservice.exceptions.BusinessException;
 import org.pop.courseservice.services.courses.CourseService;
 import org.pop.courseservice.services.response.ResponseBody;
 import org.pop.courseservice.services.response.ResponseBodyFactory;
@@ -21,7 +22,7 @@ public class CourseController {
     private final ResponseBodyFactory<CourseDto> responseBodyFactory;
     private final ResponseBodyFactory<List<CourseDto>> listResponseBodyFactory;
     @PostMapping("/courses")
-    public ResponseEntity<ResponseBody<CourseDto>> addCourse(@RequestBody CourseDto courseDto){
+    public ResponseEntity<ResponseBody<CourseDto>> addCourse(@RequestBody CourseDto courseDto) throws BusinessException {
         CourseDto newCourse = courseService.addCourse(courseDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseBodyFactory.get(MessageCode.SUCCESSFUL_OPERATION, newCourse));
