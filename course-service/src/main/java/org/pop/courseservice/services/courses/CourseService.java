@@ -10,4 +10,5 @@ public interface CourseService {
     List<CourseDto> getAllCourses();
     CourseDto getCourseById(Long oid);
     CourseDto updateCourseStatus(Long oid, CourseDto requestDto);
+    void deleteCourse(Long oid);
 }

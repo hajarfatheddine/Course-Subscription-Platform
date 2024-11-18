@@ -55,6 +55,12 @@ public class CourseServiceImpl implements CourseService {
         return mapToCourseDto(coursesRepository.save(course));
     }
 
+    @Override
+    public void deleteCourse(Long oid) {
+        Course course = coursesRepository.findCoursesByOid(oid);
+        coursesRepository.delete(course);
+    }
+
     private CourseDto mapToCourseDto(Course newCourse) {
         return CourseDto.builder()
                 .title(newCourse.getTitle())
