@@ -49,9 +49,9 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CourseDto updateCourseDescription(Long oid, CourseDto requestDto) {
+    public CourseDto updateCourseStatus(Long oid, CourseDto requestDto) {
         Course course = coursesRepository.findCoursesByOid(oid);
-        course.setDescription(requestDto.getDescription());
+        course.setCourseStatus(requestDto.getCourseStatus());
         return mapToCourseDto(coursesRepository.save(course));
     }
 

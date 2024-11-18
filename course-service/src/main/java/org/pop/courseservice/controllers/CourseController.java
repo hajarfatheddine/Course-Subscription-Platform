@@ -35,11 +35,11 @@ public class CourseController {
                 .get(MessageCode.COURSE_FOUND,courseService.getCourseById(oid)));
     }
     @PutMapping("/update-course/{oid}")
-    public ResponseEntity<ResponseBody<CourseDto>> updateCourseDescription(
+    public ResponseEntity<ResponseBody<CourseDto>> updateCourseStatus(
             @PathVariable(name = "oid")Long oid,
             @RequestBody CourseDto requestDto
     ){
-        CourseDto courseDto = courseService.updateCourseDescription(oid,requestDto);
+        CourseDto courseDto = courseService.updateCourseStatus(oid,requestDto);
         return ResponseEntity.ok(responseBodyFactory.get(MessageCode.SUCCESSFUL_UPDATE,courseDto));
     }
 }

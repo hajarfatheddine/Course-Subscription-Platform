@@ -9,5 +9,5 @@ public interface CourseService {
     CourseDto addCourse(CourseDto courseDto);
     List<CourseDto> getAllCourses();
     CourseDto getCourseById(Long oid);
-    CourseDto updateCourseDescription(Long oid, CourseDto requestDto);
+    CourseDto updateCourseStatus(Long oid, CourseDto requestDto);
 }
